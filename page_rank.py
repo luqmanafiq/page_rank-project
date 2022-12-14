@@ -23,15 +23,9 @@ def load_graph(args):
         node, target = line.split()
 
         if node in graph_dict.keys(): # Check if our current URL is in the current keys of our dictionary
-            graph.dict[node].append(target) # If it is, append our current target to the existing values
+            graph_dict[node].append(target) # If it is, append our current target to the existing values
         else:
             graph_dict[node] = [target] # If not, create a new key/value pair with our current node and target. The target is saved as a list so its values can be added to it later.
-
-    file = open("school_web.txt")
-
-    data = file.read()
-
-    print(data)
 
     return graph_dict
     #raise RuntimeError("This function is not implemented yet.")
@@ -58,10 +52,10 @@ def stochastic_page_rank(graph, args):
         hitcount[node] = 0 # Add the node to the dictionary with a value of 0
 
     for repetition in range(args.repeats):
-        current_node = random.choice(nodes) # Select a random node from all nodes, which we stored in the 'nodes' variable earlier
+        current_node = choice(nodes) # Select a random node from all nodes, which we stored in the 'nodes' variable earlier
 
         for step in range(args.steps):
-            current_node = random.choice(graph[current_node]) # Select a random node from the target nodes of our current URL
+            current_node = choice(graph[current_node]) # Select a random node from the target nodes of our current URL
 
         hitcount[current_node] += 1 / args.repeats
     return hitcount
