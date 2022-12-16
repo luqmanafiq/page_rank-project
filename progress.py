@@ -1,3 +1,4 @@
+
 """A progress bar for the command line"""
 import sys
 import time

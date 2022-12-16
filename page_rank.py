@@ -30,13 +30,12 @@ def load_graph(args):
 #raise RuntimeError("This function is not implemented yet.")
 
 def print_stats(graph):
-
     nodes = len(graph)  # This will count the number of keys in the graph dictionary, i.e. the number of unique values
     edges = 0
     for targetURLs in graph.values():  # Loops through all the values in the dictionary, which are in this case lists, and adds the length of them to the 'edges' variables
-        yield targetURLs + len(targetURLs) # This is the same as doing edges = edges + len(targetURLs)
+        edges += len(targetURLs)  # This is the same as doing edges = edges + len(targetURLs). Also I have mention in report about doing generator expression which takes 0.01 more than doing a for loop
 
-    return f"Nodes:", nodes , "Edges:", edges
+    print("Nodes:", nodes , "Edges:", edges)
 
     """Print number of nodes and edges in the given graph"""
 
@@ -45,7 +44,9 @@ def print_stats(graph):
 def stochastic_page_rank(graph, args):
 
     nodes = list(graph.keys()) # Get all of our source nodes as a list
-    hitcount = {node: 0 for node in nodes}
+    hitcount = {node: 0 for node in nodes} # Create an empty dictionary to store our nodes and their hitcount
+    # Loop through every node. 'node' here stores a URL
+    # Add the node to the dictionary with a value of 0
 
     for repetition in range(args.repeats):
         current_node = choice(nodes) # Select a random node from all nodes, which we stored in the 'nodes' variable earlier
@@ -55,7 +56,6 @@ def stochastic_page_rank(graph, args):
 
         hitcount[current_node] += 1 / args.repeats
     return hitcount
-
 
     """Stochastic PageRank estimation
     Parameters:
@@ -73,15 +73,13 @@ def stochastic_page_rank(graph, args):
 def distribution_page_rank(graph, args):
 
     nodes = list(graph.keys()) # Get all of our source nodes as a list
-    node_prob = {} # Create an empty dictionary to store our nodes and overall probabilities
-    for node in nodes:
-        node_prob[node] = 1 / len(nodes) # Assign each node to the default probability value
+    node_prob = {node: 1 / len(nodes) for node in nodes}
+    # with dictionary of lists, Create an empty dictionary to store our nodes and overall probabilities
+    # Assign each node to the default probability value
 
     for step in range(args.steps):
-        next_prob = {} # Create an empty dictionary to store our nodes and probabilities on a per-loop basis
-
-        for node in nodes:
-            next_prob[node] = 0 # Assign each node to a value of 0
+        next_prob = {node: 0 for node in nodes} # Create an empty dictionary to store our nodes and probabilities on a per-loop basis
+ # Assign each node to a value of 0
 
         for node in nodes:
             targets = graph[node] # Get the target nodes of the current node
