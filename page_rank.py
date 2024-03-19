@@ -66,7 +66,7 @@ def stochastic_page_rank(graph, args):
     This function estimates the Page Rank by counting how frequently    a random walk that starts on a random node will after n_steps end
     on each node of the given graph.
     """
-    #raise RuntimeError("This function is not implemented yet.")
+    ##raise RuntimeError("This function is not implemented yet.")
 
 
 def distribution_page_rank(graph, args):
