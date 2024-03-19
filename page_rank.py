@@ -63,8 +63,7 @@ def stochastic_page_rank(graph, args):
     args -- arguments named tuple
     Returns:
     A dict that assigns each page its hit frequency
-    This function estimates the Page Rank by counting how frequently
-    a random walk that starts on a random node will after n_steps end
+    This function estimates the Page Rank by counting how frequently    a random walk that starts on a random node will after n_steps end
     on each node of the given graph.
     """
     #raise RuntimeError("This function is not implemented yet.")
