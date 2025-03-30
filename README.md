@@ -1,50 +1,82 @@
-# csc1034_project3_2022 optimization report {#c2065064}
+# CSC1034 PageRank Implementation Project
 
-## Load graph
-For the load_graph function, I add a for loop method to add node and target to dictionary representing graph. The dictionary of lists should then be returned because we can determine if a node is a key in our dictionary or not. The dictionary can also be adjusted in accordance with this by switching the if statement to determine whether the node is not already a key.
+## Overview
+This project implements and optimizes the PageRank algorithm for web page importance calculation using two different approaches:
+1. Stochastic PageRank - Random walk simulation
+2. Distribution PageRank - Iterative probability calculation
 
-## Print Stats
-For this part, I first use two functions which is printEdges and printNodes. I also use generator expression to sum the number of edges instead a for loop. Method len() will count the number of keys in the graph dictionary which is the unique values. By doing return function, I reduce the number of lines compared to print function so the Python will stop the execution of the current function, sending a value out to where the function was called.
-It turns out some part are missing and to avoid redundant lines of code, I decided to use for loop. I also try to make return functions to count number of edges and nodes respectively but it doesn't match with generator list which the number of nodes and edges is not printed. Hence, I use the built-in functions.
-Here I put codes before implementing optimization method:
+## Implementation Details
+
+### Graph Structure
+The web graph is represented as a dictionary of lists where:
+- Each key is a source URL (node)
+- Each value is a list of target URLs that the source URL links to
+
+### Algorithm Implementations
+
+#### Stochastic PageRank
+This implementation estimates PageRank by simulating random walks on the graph:
+- Start at a random node
+- For a specified number of steps, randomly follow links
+- Track the frequency each node is visited
+- Node visit frequencies approximate their PageRank values
+
+Optimization techniques:
+- Used dictionary comprehension for initialization
+- Imported `choice` directly from random module for performance
+- Avoided redundant calculations by using direct random selection
+
+#### Distribution PageRank
+This implementation calculates PageRank by iteratively updating probability distributions:
+- Initialize each node with equal probability (1/total nodes)
+- For each step, redistribute probabilities based on link structure
+- Final probabilities represent PageRank values
+
+Optimization techniques:
+- Used dictionary comprehension for initialization and step calculations
+- Optimized loop structures to minimize redundant operations
+- Used direct probability calculations instead of accumulating values
+
+### Performance Comparison
+- Stochastic PageRank: ~0.07 seconds (faster)
+- Distribution PageRank: ~0.19 seconds (more precise)
+
+The distribution method takes longer but provides more consistent results with fewer iterations, while the stochastic method requires many repetitions to accurately approximate probabilities.
+
+## Usage Instructions
+
+Run the script with a data file containing URL pairs:
 ```
- yield targetURLs + len(targetURLs) # This is the same as doing edges = edges + len(targetURLs)
-
-    return f"Nodes:", nodes , "Edges:", edges
-```
-## Stochastic Page Rank
-I use dictionary of lists initially to find the difference in seconds with dictionary comprehension. It turns out dictionary of lists gives much faster results with 0.06 seconds in comparison to dictionary comprehension which gives 0.07 seconds even it have less code. But in the bottom result of it shows.
-
-The initial dictionary comprehension is as follows:
-```
-nodes = list(graph.keys()) # Get all of our source nodes as a list
-    hitcount = {node: 0 for node in nodes}
-
-    for repetition in range(args.repeats):
-    etc...
+python page_rank.py datafile.txt [options]
 ```
 
-The second one is by import the `random` module at the start of python file. This can be made more efficient by instead doing `from random import choice` and the `current_node =  ̶r̶a̶n̶d̶o̶m̶.choice(nodes)` and `current_node =  ̶r̶a̶n̶d̶o̶m̶.choice(graph[current_node])` on the other loop nested inside repetitions loop which saves some time. current_node is now changed to be a different URL.It is selected at random from our current URL's target nodes. As our graph was saved as a dictionary of lists, this is possible. Calling graph[current node] provides a list of the URLs that our current position links to.
+### Command Line Options
+- `-m, --method`: Algorithm selection ('stochastic' or 'distribution')
+- `-r, --repeats`: Number of repetitions for stochastic method (default: 1,000)
+- `-s, --steps`: Number of steps in each walk/iteration (default: 100)
+- `-n, --number`: Number of top results to display (default: 20)
 
-## Distribution Page Rank
-The function runs at 0.20 seconds at first, as I implement dictionary comprehension, it increase by 0.01 seconds. This method is used the same as in stochastic page rank. I tried all lines by using dictionary comprehension and reduce the number of lines. By using this code below it takes around 0.07 seconds to calculate.
+### Example
+```
+python page_rank.py school_web.txt -m distribution -s 200
 ```
 
-def distribution_page_rank(graph, args):
-
-    nodes = list(graph.keys()) # Get all of our source nodes as a list
-    node_prob = {} # Create an empty dictionary to store our nodes and overall probabilities
-    for node in nodes:
-        node_prob[node] = 1 / len(nodes) # Assign each node to the default probability value
-
-    for step in range(args.steps):
-        next_prob = {} # Create an empty dictionary to store our nodes and probabilities on a per-loop basis
-
-        for node in nodes:
-            next_prob[node] = 0 # Assign each node to a value of 0
-
+## Input File Format
+The input file should contain pairs of URLs, where each pair represents a link from the first URL to the second URL:
 ```
-Again, I'm assuming that the graph is implemented as a dictionary of lists, which is preferable, but I'm still testing dictionary comprehensions because they use less code and make the assumption that my computer runs more slowly. Our current node's value will be returned by graph[node]. The likelihood of a node being at the end increases with the number of times it appears in the dictionary's values. `next_prob[outURL] += p` means the out edges of a node are the URLs we could immediately leave to. `node_prob = next_prob` we are setting our overall probability dictionary to be our per-loop dictionary by overwriting the values.
-## Overall optimization report
+http://source1.com http://target1.com
+http://source1.com http://target2.com
+http://source2.com http://target3.com
+...
+```
 
-In overall, the calvulation for Stochastic is at 0.07 seconds while Distribution takes longer time which is 0.19 seconds. This can be explain by that we need to run many repetitions in order for these frequencies to accurately approximate probabilities. I executed the terminal to run the boilerplate code and replace some for loops. I also add import random to select random node. These method bit by bit reduce the amount of time needed and increase the performance. 
+## Output
+The program outputs:
+1. Graph statistics (number of nodes and edges)
+2. Top N pages ranked by their PageRank value
+3. Calculation time
+
+## Implementation Notes
+- The implementation uses efficient data structures (dictionary of lists) for graph representation
+- Dictionary comprehension is used for cleaner code but introduces a slight performance overhead
+- Random selection is optimized by direct import of the `choice` function
